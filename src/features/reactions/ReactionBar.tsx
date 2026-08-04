@@ -83,7 +83,7 @@ export function ReactionBar({
           {!compact && (
             <div
               className="absolute inset-0 flex items-center justify-center pointer-events-none"
-              style={{ zIndex: 2 }}
+              style={{ zIndex: 3 }}
             >
               <span
                 className="text-xs font-bold tracking-wider"

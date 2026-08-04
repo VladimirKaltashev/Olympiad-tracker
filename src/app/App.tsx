@@ -13,7 +13,7 @@ import { FriendsPage } from '@/pages/FriendsPage'
 import { LeaderboardPage } from '@/pages/LeaderboardPage'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { ChallengesPage, ChallengeDetailPage, MyClaimsPage } from '@/pages'
-import { ThemeApplier, useThemeStore } from '@/entities/theme'
+import { ThemeApplier, CursorSmear, useThemeStore } from '@/entities/theme'
 import '@/styles/theme-tokens.css'
 import '@/styles/theme-components.css'
 import '@/styles/themes/acid.css'
@@ -29,6 +29,7 @@ export function App() {
   return (
     <>
       <ThemeApplier />
+      <CursorSmear />
       <ThemeProvider colorMode={themeToColorMode(theme)}>
         <BrowserRouter>
           <Routes>

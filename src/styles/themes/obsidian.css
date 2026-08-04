@@ -1,13 +1,12 @@
 /*******************************************************************************
  * OBSIDIAN BLOOD — Default CORK theme world
- * Dark arena of verdicts. Black/graphite/matte.
- * Severe. Sharp. Not neon. Not SaaS.
+ * Tribunal Red / Redacted Board experiment.
+ * Black public verdict board, case-file dossier system.
  *
  * Applied when [data-theme="obsidian"] is active on <html>.
  ******************************************************************************/
 
 [data-theme="obsidian"] {
-  /* ── Surfaces — matte graphite depth ── */
   --cork-bg:          #09090b;
   --cork-surface:     #121215;
   --cork-surface-2:   #1a1a1e;
@@ -37,7 +36,10 @@
   --cork-backdrop:     rgba(9, 9, 11, 0.9);
 }
 
-/* ── Body — matte verdict board background ── */
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Body base
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 [data-theme="obsidian"] body {
   background-color: var(--cork-bg) !important;
   color: var(--cork-text) !important;
@@ -46,74 +48,368 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Root stacking ── */
 [data-theme="obsidian"] #root {
   position: relative;
   z-index: 1;
 }
 
-/* ── Tags — status marks, not candy pills ── */
-[data-theme="obsidian"] .cork-tag {
-  border-radius: var(--cork-radius-btn);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  border: 1px solid var(--cork-border);
-  background: var(--cork-surface-3);
-  color: var(--cork-text-dim);
-  transition: border-color 0.2s, color 0.2s;
-}
-[data-theme="obsidian"] .cork-tag:hover {
-  border-color: var(--cork-frame);
-  color: var(--cork-text);
-}
-[data-theme="obsidian"] .cork-tag--active {
-  color: var(--cork-success);
-  border-color: rgba(58, 138, 82, 0.35);
-  background: rgba(58, 138, 82, 0.12);
-}
-[data-theme="obsidian"] .cork-tag--upcoming {
-  color: var(--cork-brand);
-  border-color: var(--cork-frame-light);
-  background: rgba(184, 56, 56, 0.1);
-}
-[data-theme="obsidian"] .cork-tag--done {
-  color: var(--cork-text-dim);
-  border-color: var(--cork-border);
-  background: var(--cork-surface-3);
-}
-[data-theme="obsidian"] .cork-tag--king {
-  color: var(--cork-king);
-  border-color: rgba(184, 151, 62, 0.35);
-  background: rgba(184, 151, 62, 0.1);
-}
-[data-theme="obsidian"] .cork-tag--clown {
-  color: var(--cork-clown);
-  border-color: rgba(184, 84, 58, 0.35);
-  background: rgba(184, 84, 58, 0.1);
-}
-[data-theme="obsidian"] .cork-tag--finder {
-  color: #34d399;
-  border-color: rgba(52, 211, 153, 0.35);
-  background: rgba(52, 211, 153, 0.1);
+/* ═══════════════════════════════════════════════════════════════════════════
+ * BACKGROUND LAYER — dossier grid + ghost labels
+ * Grid at ~0.045 alpha, labels at ~0.065 alpha.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Grid ruling */
+[data-theme="obsidian"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
-/* ── Verdict bar — tribunal judgment ── */
+/* Ghost labels — PUBLIC VERDICT / CLAIM LEDGER / CASE BOARD */
+@media (min-width: 768px) {
+  [data-theme="obsidian"] body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      /* PUBLIC VERDICT — center, large */
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='120'%3E%3Ctext x='300' y='60' font-family='system-ui,sans-serif' font-size='28' font-weight='800' letter-spacing='20' fill='rgba(255,255,255,0.065)' text-anchor='middle'%3EPUBLIC VERDICT%3C/text%3E%3C/svg%3E") no-repeat center center,
+      /* CLAIM LEDGER — top-left */
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='80'%3E%3Ctext x='0' y='38' font-family='system-ui,sans-serif' font-size='14' font-weight='700' letter-spacing='10' fill='rgba(255,255,255,0.065)' text-anchor='start'%3ECLAIM LEDGER%3C/text%3E%3C/svg%3E") no-repeat 48px 48px,
+      /* CASE BOARD — bottom-right */
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='80'%3E%3Ctext x='240' y='38' font-family='system-ui,sans-serif' font-size='14' font-weight='700' letter-spacing='10' fill='rgba(255,255,255,0.06)' text-anchor='end'%3ECASE BOARD%3C/text%3E%3C/svg%3E") no-repeat right 48px bottom 48px;
+    opacity: 1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * CURSOR BLOOD SMEAR — directional, stretched along movement vector
+ * Desktop fine-pointer only, respects reduced-motion.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="obsidian"] .cork-cursor-smear {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: var(--cork-cursor-smear-w, 0px);
+  height: var(--cork-cursor-smear-h, 0px);
+  transform: translate3d(
+    calc(var(--cork-cursor-smear-x, 0px) - var(--cork-cursor-smear-w, 0px) * 0.5),
+    calc(var(--cork-cursor-smear-y, 0px) - var(--cork-cursor-smear-h, 0px) * 0.5),
+    0
+  ) rotate(var(--cork-cursor-smear-angle, 0rad));
+  border-radius: 999px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(125, 18, 22, 0.28) 0%,
+    rgba(125, 18, 22, 0.14) 35%,
+    rgba(125, 18, 22, 0.04) 65%,
+    transparent 100%
+  );
+  filter: blur(14px);
+  opacity: var(--cork-cursor-smear-opacity, 0);
+  pointer-events: none;
+  z-index: 2;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="obsidian"] .cork-cursor-smear {
+    opacity: 0 !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * CASE SURFACE TREATMENT — dossier sheets
+ * Visible top blood rule, left rail, restrained copper sheen on hover.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Cards — case-file panel ── */
+[data-theme="obsidian"] .cork-card {
+  position: relative;
+  border: 1px solid var(--cork-border);
+  background: var(--cork-surface);
+  overflow: hidden;
+}
+[data-theme="obsidian"] .cork-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--cork-frame);
+  opacity: 0.55;
+  pointer-events: none;
+}
+[data-theme="obsidian"] .cork-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--cork-frame),
+    transparent 85%
+  );
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+/* Card hover — border highlight + restrained inset sheen, no lift */
+[data-theme="obsidian"] .cork-card:hover {
+  border-color: var(--cork-frame-light);
+  transform: none;
+  box-shadow:
+    var(--cork-shadow-lg),
+    inset 0 1px 0 rgba(184, 56, 56, 0.09);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="obsidian"] .cork-card:hover {
+    box-shadow: var(--cork-shadow-lg);
+  }
+}
+
+/* ── Panels — secondary dossier sheets ── */
+[data-theme="obsidian"] .cork-panel {
+  position: relative;
+  border: 1px solid var(--cork-border);
+  background: var(--cork-surface-2);
+}
+[data-theme="obsidian"] .cork-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--cork-frame);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* ── Sidebar blocks (challenge detail, settings) ── */
+[data-theme="obsidian"] .sidebar-block {
+  position: relative;
+  border: 1px solid var(--cork-border);
+  background: var(--cork-surface);
+}
+[data-theme="obsidian"] .sidebar-block::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--cork-frame);
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* ── Challenge entries — case-file child items ── */
+[data-theme="obsidian"] .challenge-entry {
+  position: relative;
+}
+[data-theme="obsidian"] .challenge-entry::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--cork-frame),
+    transparent 90%
+  );
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+/* ── Leader rows — board entries ── */
+[data-theme="obsidian"] .leader-row {
+  position: relative;
+}
+[data-theme="obsidian"] .leader-row::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 2px;
+  background: var(--cork-brand);
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+/* ── Challenge spotlights ── */
+[data-theme="obsidian"] .challenge-spotlight {
+  border-color: var(--cork-frame-light);
+  background: var(--cork-surface);
+}
+[data-theme="obsidian"] .challenge-spotlight::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--cork-brand);
+  opacity: 0.4;
+  pointer-events: none;
+}
+[data-theme="obsidian"] .challenge-hero--arena {
+  border-color: var(--cork-frame-light);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * VERDICT BAR — judgment scale with visible hash marks
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 [data-theme="obsidian"] .cork-verdict-track {
+  position: relative;
   border: 1px solid var(--cork-border);
   background: var(--cork-surface-3);
   border-radius: var(--cork-radius-btn);
 }
+
+/* Scale marks — 8 vertical hash lines */
+[data-theme="obsidian"] .cork-verdict-track::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent calc(12.5% - 1px),
+    rgba(255, 255, 255, 0.1) calc(12.5% - 1px),
+    rgba(255, 255, 255, 0.1) calc(12.5% + 1px),
+    transparent calc(12.5% + 1px)
+  );
+}
+
+/* Center divider — dotted verdict center */
+[data-theme="obsidian"] .cork-verdict-track::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  z-index: 2;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.18) 0 3px,
+    transparent 3px 7px
+  );
+}
+
+/* King / Clown segments render above scale marks */
 [data-theme="obsidian"] .cork-verdict-king {
   background: var(--cork-king);
   color: #0f0e0a;
+  position: relative;
+  z-index: 1;
 }
 [data-theme="obsidian"] .cork-verdict-clown {
   background: var(--cork-clown);
   color: #fcf4f2;
+  position: relative;
+  z-index: 1;
 }
 
-/* ── Buttons — sharp, decisive ── */
+/* Reduce old hash overlay from king/clown segments */
+[data-theme="obsidian"] .cork-verdict-king::after,
+[data-theme="obsidian"] .cork-verdict-clown::after {
+  opacity: 0.35;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * STAMP STATUS BADGES — dashed borders, visible rotation, ink-stamp feel
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="obsidian"] .cork-tag {
+  border-radius: var(--cork-radius-btn);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1.5px dashed var(--cork-border);
+  background: var(--cork-surface-3);
+  color: var(--cork-text-dim);
+  transition: border-color 0.2s, color 0.2s, transform 0.15s;
+  transform: rotate(-1.5deg);
+}
+[data-theme="obsidian"] .cork-tag:hover {
+  border-color: var(--cork-frame);
+  color: var(--cork-text);
+  border-style: solid;
+  transform: rotate(0deg);
+}
+
+/* Stamp variants */
+[data-theme="obsidian"] .cork-tag--active {
+  color: var(--cork-success);
+  border-color: rgba(58, 138, 82, 0.5);
+  border-style: dashed;
+  background: rgba(58, 138, 82, 0.1);
+}
+[data-theme="obsidian"] .cork-tag--upcoming {
+  color: var(--cork-brand);
+  border-color: var(--cork-frame-light);
+  border-style: dotted;
+  background: rgba(184, 56, 56, 0.08);
+}
+[data-theme="obsidian"] .cork-tag--done {
+  color: var(--cork-text-dim);
+  border-color: var(--cork-border);
+  border-style: dotted;
+  background: var(--cork-surface-3);
+}
+[data-theme="obsidian"] .cork-tag--king {
+  color: var(--cork-king);
+  border-color: rgba(184, 151, 62, 0.5);
+  border-style: dashed;
+  background: rgba(184, 151, 62, 0.1);
+}
+[data-theme="obsidian"] .cork-tag--clown {
+  color: var(--cork-clown);
+  border-color: rgba(184, 84, 58, 0.5);
+  border-style: dashed;
+  background: rgba(184, 84, 58, 0.1);
+}
+[data-theme="obsidian"] .cork-tag--finder {
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.5);
+  border-style: dashed;
+  background: rgba(52, 211, 153, 0.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="obsidian"] .cork-tag {
+    transform: none;
+  }
+  [data-theme="obsidian"] .cork-tag:hover {
+    transform: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * BUTTONS — sharp, decisive
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 [data-theme="obsidian"] .cork-btn-primary {
   box-shadow: none;
 }
@@ -135,21 +431,10 @@
   background: var(--cork-brand-hover);
 }
 
-/* ── Cards — matte verdict panel ── */
-[data-theme="obsidian"] .cork-card {
-  border: 1px solid var(--cork-border);
-  background: var(--cork-surface);
-}
-[data-theme="obsidian"] .cork-card:hover {
-  border-color: var(--cork-frame-light);
-  box-shadow: var(--cork-shadow-lg);
-}
-[data-theme="obsidian"] .cork-panel {
-  border: 1px solid var(--cork-border);
-  background: var(--cork-surface-2);
-}
+/* ═══════════════════════════════════════════════════════════════════════════
+ * HEADER — tribunal bar
+ * ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Header — tribunal bar ── */
 [data-theme="obsidian"] .cork-header {
   backdrop-filter: blur(16px);
   background: var(--cork-backdrop);
@@ -159,7 +444,10 @@
   letter-spacing: 0.04em;
 }
 
-/* ── Nav links — serious, not cute ── */
+/* ═══════════════════════════════════════════════════════════════════════════
+ * NAV LINKS
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 [data-theme="obsidian"] .cork-nav-link {
   border-radius: var(--cork-radius-btn);
 }
@@ -168,7 +456,10 @@
   background: rgba(184, 56, 56, 0.08);
 }
 
-/* ── Section titles ── */
+/* ═══════════════════════════════════════════════════════════════════════════
+ * TYPOGRAPHY
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 [data-theme="obsidian"] .cork-section-title {
   letter-spacing: 0.08em;
 }
@@ -176,15 +467,10 @@
   letter-spacing: 0.04em;
 }
 
-/* ── Challenge spotlights ── */
-[data-theme="obsidian"] .challenge-spotlight {
-  border-color: var(--cork-frame-light);
-}
-[data-theme="obsidian"] .challenge-hero--arena {
-  border-color: var(--cork-frame-light);
-}
+/* ═══════════════════════════════════════════════════════════════════════════
+ * STAT BLOCKS
+ * ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Stat blocks ── */
 [data-theme="obsidian"] .cork-stat {
   background: var(--cork-surface-3);
   border: 1px solid var(--cork-border);
@@ -194,19 +480,23 @@
   color: var(--cork-text);
 }
 
-/* ── Focus ring ── */
+/* ═══════════════════════════════════════════════════════════════════════════
+ * FOCUS / SELECTION
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 [data-theme="obsidian"] :focus-visible {
   outline: 2px solid var(--cork-frame);
   outline-offset: 2px;
 }
-
-/* ── Selection ── */
 [data-theme="obsidian"] ::selection {
   background: rgba(184, 56, 56, 0.35);
   color: var(--cork-text);
 }
 
-/* ── Scrollbar — verdict board ── */
+/* ═══════════════════════════════════════════════════════════════════════════
+ * SCROLLBAR
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 [data-theme="obsidian"] ::-webkit-scrollbar-track {
   background: var(--cork-bg);
 }
@@ -218,12 +508,18 @@
   background: var(--cork-brand);
 }
 
-/* ── Filter ── */
+/* ═══════════════════════════════════════════════════════════════════════════
+ * FILTER
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 [data-theme="obsidian"] .cork-filter {
   border-radius: var(--cork-radius-btn);
 }
 
-/* ── Forms / inputs ── */
+/* ═══════════════════════════════════════════════════════════════════════════
+ * FORMS / INPUTS
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 [data-theme="obsidian"] .challenge-field input,
 [data-theme="obsidian"] .challenge-field textarea {
   background: var(--cork-surface-3);
@@ -236,20 +532,29 @@
   border-color: var(--cork-frame);
 }
 
-/* ── Empty state ── */
+/* ═══════════════════════════════════════════════════════════════════════════
+ * EMPTY STATE
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 [data-theme="obsidian"] .cork-empty {
   border-color: var(--cork-border);
   background: var(--cork-surface-2);
   color: var(--cork-text-dim);
 }
 
-/* ── Dropdowns ── */
+/* ═══════════════════════════════════════════════════════════════════════════
+ * DROPDOWNS
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 [data-theme="obsidian"] .dropdown {
   background: var(--cork-surface);
   border: 1px solid var(--cork-border);
 }
 
-/* ── Generic Tailwind bypass patches for core surfaces ── */
+/* ═══════════════════════════════════════════════════════════════════════════
+ * TAILWIND BYPASS PATCHES
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 [data-theme="obsidian"] .bg-white { background-color: var(--cork-surface) !important; }
 [data-theme="obsidian"] .bg-gray-50 { background-color: var(--cork-bg) !important; }
 [data-theme="obsidian"] .bg-gray-100 { background-color: var(--cork-surface-2) !important; }
