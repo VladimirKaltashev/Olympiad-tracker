@@ -187,6 +187,32 @@ test.describe('Challenges', () => {
       })
     })
 
+    // Mock linked live challenge claim. Challenge detail renders claim cards from achievements,
+    // while challenge_entries only carries the challenge -> claim link.
+    await page.route(/\/rest\/v1\/achievements/, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([
+          {
+            id: 'c1',
+            user_id: 'test-user',
+            category: 'other',
+            title: 'Моя заявка',
+            description: 'Тестовая заявка для челленджа',
+            year: 2026,
+            proof_type: 'none',
+            proof_value: null,
+            status: 'pending',
+            rejection_reason: null,
+            claim_angle: 'judge',
+            meta: { challenge_id: '11111111-1111-1111-1111-111111111111', source: 'challenge_entry' },
+            created_at: new Date().toISOString(),
+          },
+        ]),
+      })
+    })
+
     // Mock awards
     await page.route(/\/rest\/v1\/challenge_awards/, async (route) => {
       await route.fulfill({
